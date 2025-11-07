@@ -1,0 +1,38 @@
+{
+  "banner": {
+    "logo": "CRYPTO",
+    "initialAttempts": 3,
+    "quiz": {
+      "question": "What is the maximum supply of Bitcoin?",
+      "answers": [
+        {
+          "text": "200 million",
+          "isCorrect": false
+        },
+        {
+          "text": "21 million",
+          "isCorrect": true
+        },
+        {
+          "text": "50 million",
+          "isCorrect": false
+        },
+        {
+          "text": "Unlimited",
+          "isCorrect": false
+        }
+      ]
+    },
+    "finalScreen": {
+      "successIcon": "✓",
+      "ctaText": "Find your crypto in the app",
+      "buttonText": "Start",
+      "landingPageUrl": "https://example.com/landing-page"
+    },
+    "messages": {
+      "attemptsLeft": "You have {count} attempt{plural} left",
+      "noAttemptsLeft": "No attempts left. Try again!",
+      "attemptsDisplay": "Attempts: {count}"
+    }
+  }
+}

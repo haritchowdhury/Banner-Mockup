@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crypto Quiz Banner</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: #000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .banner-container {
+        width: 300px;
+        height: 250px;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        border-radius: 8px;
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      }
+
+      .screen {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+      }
+
+      .screen.active {
+        opacity: 1;
+        z-index: 2;
+      }
+
+      .logo {
+        font-size: 24px;
+        font-weight: bold;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 15px;
+      }
+
+      .question {
+        color: #fff;
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        line-height: 1.4;
+      }
+
+      .answers {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        flex: 1;
+      }
+
+      .answer-btn {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #fff;
+        padding: 12px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 12px;
+        transition: all 0.3s ease;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        line-height: 1.3;
+      }
+
+      .answer-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(102, 126, 234, 0.5);
+        transform: translateX(3px);
+      }
+
+      .answer-btn.correct {
+        background: rgba(34, 197, 94, 0.2);
+        border-color: #22c55e;
+      }
+
+      .answer-btn.wrong {
+        background: rgba(239, 68, 68, 0.2);
+        border-color: #ef4444;
+        animation: shake 0.4s ease;
+      }
+
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-5px);
+        }
+        75% {
+          transform: translateX(5px);
+        }
+      }
+
+      .message {
+        color: #ef4444;
+        font-size: 12px;
+        margin-top: 8px;
+        text-align: center;
+        font-weight: 500;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .message.show {
+        opacity: 1;
+      }
+
+      .final-screen {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+      }
+
+      .success-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 30px;
+        margin-bottom: 15px;
+        animation: scaleIn 0.5s ease;
+      }
+
+      @keyframes scaleIn {
+        0% {
+          transform: scale(0);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .cta-text {
+        color: #fff;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        line-height: 1.3;
+      }
+
+      .start-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+        border: none;
+        padding: 12px 40px;
+        border-radius: 25px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .start-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+      }
+
+      .attempts {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 11px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="banner-container">
+      <!-- Quiz Screen -->
+      <div class="screen active" id="quizScreen">
+        <div class="logo" id="logo"></div>
+        <div class="attempts" id="attemptsDisplay"></div>
+        <div class="question" id="question"></div>
+        <div class="answers" id="answers"></div>
+        <div class="message" id="message"></div>
+      </div>
+
+      <!-- Final Screen -->
+      <div class="screen" id="finalScreen">
+        <div class="final-screen">
+          <div class="success-icon" id="successIcon"></div>
+          <div class="cta-text" id="ctaText"></div>
+          <button class="start-btn" id="startBtn"></button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let attempts;
+      let bannerData;
+      const quizScreen = document.getElementById("quizScreen");
+      const finalScreen = document.getElementById("finalScreen");
+      const message = document.getElementById("message");
+      const attemptsDisplay = document.getElementById("attemptsDisplay");
+      const answersContainer = document.getElementById("answers");
+      const startBtn = document.getElementById("startBtn");
+
+      // Load data from JSON file
+      fetch("data.json")
+        .then((response) => response.json())
+        .then((data) => {
+          bannerData = data.banner;
+          initializeBanner();
+        })
+        .catch((error) => {
+          console.error("Error loading banner data:", error);
+        });
+
+      function initializeBanner() {
+        // Set initial attempts
+        attempts = bannerData.initialAttempts;
+
+        // Populate logo
+        document.getElementById("logo").textContent = bannerData.logo;
+
+        // Populate attempts display
+        attemptsDisplay.textContent = bannerData.messages.attemptsDisplay.replace(
+          "{count}",
+          attempts
+        );
+
+        // Populate question
+        document.getElementById("question").textContent =
+          bannerData.quiz.question;
+
+        // Populate answers
+        bannerData.quiz.answers.forEach((answer) => {
+          const btn = document.createElement("button");
+          btn.className = "answer-btn";
+          btn.textContent = answer.text;
+          btn.dataset.correct = answer.isCorrect;
+          answersContainer.appendChild(btn);
+
+          // Add click event listener
+          btn.addEventListener("click", function () {
+            handleAnswerClick(this);
+          });
+        });
+
+        // Populate final screen
+        document.getElementById("successIcon").textContent =
+          bannerData.finalScreen.successIcon;
+        document.getElementById("ctaText").textContent =
+          bannerData.finalScreen.ctaText;
+        startBtn.textContent = bannerData.finalScreen.buttonText;
+
+        // Add start button event listener
+        startBtn.addEventListener("click", function () {
+          window.open(bannerData.finalScreen.landingPageUrl, "_blank");
+        });
+      }
+
+      function handleAnswerClick(btn) {
+        if (btn.classList.contains("correct") || btn.classList.contains("wrong")) {
+          return;
+        }
+
+        const isCorrect = btn.dataset.correct === "true";
+
+        if (isCorrect) {
+          btn.classList.add("correct");
+          setTimeout(() => {
+            quizScreen.classList.remove("active");
+            finalScreen.classList.add("active");
+          }, 800);
+        } else {
+          attempts--;
+          btn.classList.add("wrong");
+
+          if (attempts > 0) {
+            const plural = attempts > 1 ? "s" : "";
+            message.textContent = bannerData.messages.attemptsLeft
+              .replace("{count}", attempts)
+              .replace("{plural}", plural);
+            message.classList.add("show");
+            attemptsDisplay.textContent =
+              bannerData.messages.attemptsDisplay.replace("{count}", attempts);
+
+            setTimeout(() => {
+              btn.classList.remove("wrong");
+            }, 400);
+          } else {
+            message.textContent = bannerData.messages.noAttemptsLeft;
+            message.classList.add("show");
+            attemptsDisplay.textContent =
+              bannerData.messages.attemptsDisplay.replace("{count}", 0);
+            const answerBtns = document.querySelectorAll(".answer-btn");
+            answerBtns.forEach((b) => (b.style.pointerEvents = "none"));
+          }
+        }
+      }
+    </script>
+  </body>
+</html>
